@@ -182,7 +182,6 @@ int CheckForQuit(void) {
   int keysym;
 
   if(XCheckMaskEvent(global_display_ptr,KeyPressMask,&report)) {
-    printf("Testrad\n");
     switch(keysym=XLookupKeysym(&report.xkey, 0)) {
     case XK_q:
       return 1;
