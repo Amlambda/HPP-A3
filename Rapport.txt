@@ -1,0 +1,6 @@
+Rapport A3
+
+
+Skrivit funktioner för hastighet, kraft, och positionsberäkningar.
+
+Har inte löst att läsa in partiklarna eller göra en lista som innehåller flera.
