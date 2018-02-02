@@ -4,6 +4,7 @@
 const float gravConst = 100;
 const float eps0 = 0.001;
 const float deltaT = 0.00001;
+const float distMinimum = 0.5;
 
 
 
@@ -26,8 +27,8 @@ float get_pos_1D(particle_t * target, particle_t * other, char coord){
 		target->yPos = position;
 		target->yVel = velocity;
 	}
-	printf("%c velocity is %lg\n", coord, velocity);
-	printf("%c position is %lg\n", coord, position);
+	// printf("%c velocity is %lg\n", coord, velocity);
+	// printf("%c position is %lg\n", coord, position);
 
 	return position;
 }
@@ -57,7 +58,7 @@ list of all the others or something) on target particle in x OR y */
 float get_force_1D(particle_t * target, particle_t * other, char coord){
 	float forceSum = 0;
 	float partDist, absDist, m2;
-	int numPart = 2;
+	int numPart = 2; //Replace with the number of particles
 	int i;
 	particle_t * currOther;
 	float m1 = target->mass;
@@ -75,7 +76,13 @@ float get_force_1D(particle_t * target, particle_t * other, char coord){
 			printf("Please enter x or y as coordinate\n");
 		}
 
-		forceSum += (m2*partDist)/(absDist*absDist);
+		//Plummer sphere modification, r<<1
+		if((partDist*absDist) < distMinimum){
+			forceSum += (m2*partDist*absDist)/(pow((absDist + eps0),3));
+		}else{
+			forceSum += (m2*partDist)/(pow(absDist,2));
+		}
+		
 		
 	}
 

@@ -7,14 +7,6 @@
 const float particleRadius = 0.025, particleColor = 0;
 const int windowWidth = 800;
 
-// struct particle {
-//   float mass;	
-//   float xPos;
-//   float yPos;
-//   float xVel;
-//   float yVel;
-// };
-// typedef struct particle particle_t;
 
 void keep_within_box(float* xA, float* yA) {
   if(*xA > 1)
@@ -23,16 +15,57 @@ void keep_within_box(float* xA, float* yA) {
     *yA = 0;
 }
 
-void push_new_particle( float xPos, float yPos, float xVel, float yVel){
+// void push_new_particle( float xPos, float yPos, float xVel, float yVel){
 
-}
+// }
 
 
 int main (int argc, char *argv[]) {
 	float L=1, W=1;
+
+
+	//COPIED CODE TO READ FILE
+  const char* input_file_name = "circles_N_2.gal";
+
+  printf("input_file_name = %s\n", input_file_name);
+
+  /* Open input file and determine its size. */
+  FILE* input_file = fopen(input_file_name, "rb");
+  if(!input_file) {
+    printf("Error: failed to open input file '%s'.\n", input_file_name);
+    return -1;
+  }
+  /* Get filesize using fseek() and ftell(). */
+  fseek(input_file, 0L, SEEK_END);
+  size_t fileSize = ftell(input_file);
+  /* Now use fseek() again to set file position back to beginning of the file. */
+  fseek(input_file, 0L, SEEK_SET);
+  printf("fileSize = %lu bytes.\n", fileSize);
+  /* Allocate buffer into which we can then read the data from input_file. */
+  char* buffer = (char*)malloc(fileSize*sizeof(char));
+  /* Read contents of input_file into buffer. */
+  size_t noOfItemsRead = fread(buffer, sizeof(char), fileSize, input_file);
+  if(noOfItemsRead != fileSize) {
+    printf("Error: failed to read file contents into buffer.\n");
+    return -1;
+  }
+  /* OK, now we have the file contents in the buffer.
+     Since we are finished with the input file, we can close it now. */
+  if(fclose(input_file) != 0) {
+    printf("Error closing input file.\n");
+    return -1;
+  }
+  // size_t i;
+  // for(i = 0; i < fileSize; i++) {
+  //   printf("%c ",buffer[i]);
+  // }
+
+
+
+  //Manuellt skapade testpartiklar
 	float xA, yA ,xB ,yB;
 
-	//Läs in alla partiklar från fil som struct particle, 
+	//Läs in alla partiklar från fil som struct particles..  
 	particle_t * p1 = malloc(sizeof(particle_t)); 
 	particle_t * p2 = malloc(sizeof(particle_t));
 	p1->mass = 300;
@@ -47,15 +80,6 @@ int main (int argc, char *argv[]) {
 	p2->yVel = 0.5;
 
 
-
-	// float absDist = get_abs_dist(p1->xPos, p1->yPos, p2->xPos, p2->yPos);
-	// printf("X distance: %lg\n", get_part_dist_1D(p1->xPos,p2->xPos,absDist));
-	// printf("Y distance: %lg\n", get_part_dist_1D(p1->yPos,p2->yPos,absDist));
-	// printf("X force: %lg\n", get_force_1D(p1,p2,'x'));
-	// printf("Y force: %lg\n", get_force_1D(p1,p2,'y'));
-	// get_pos_1D(p1,p2,'x');
-	// get_pos_1D(p1,p2,'y');
-
 	InitializeGraphics(argv[0],windowWidth,windowWidth);
   	SetCAxes(0,1);
 	//Hålla koll på partiklarna genom att ha deras pointers i en lista?
@@ -63,7 +87,6 @@ int main (int argc, char *argv[]) {
 
 	// Att göra för varje partikel varje tidssteg
 	// 	Var är den? x, y
-	// 	Vilka krafter verkar på den?
 
 
   printf("Hit q to quit.\n");
@@ -87,6 +110,7 @@ int main (int argc, char *argv[]) {
   }  	
 	FlushDisplay();
   	CloseDisplay();
+
 	free(p1);
 	free(p2);
 	return 0;
