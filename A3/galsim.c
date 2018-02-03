@@ -7,7 +7,6 @@
 const float particleRadius = 0.025, particleColor = 0;
 const int windowWidth = 800;
 
-
 void keep_within_box(float* xA, float* yA) {
   if(*xA > 1)
     *xA = 0;
@@ -21,11 +20,23 @@ void keep_within_box(float* xA, float* yA) {
 
 
 int main (int argc, char *argv[]) {
-	float L=1, W=1;
+	float L=1, W=1;    // Dimensions of domain in which particles move
 
+  // Check command line arguments
+  if(argc != 6) {   // If not 5 input arguments (argv[0] is the program name)
+        printf("Error: Expected number of input arguments is 5\n");
+        exit(1);
+  }
+  
+  // Read input arguments
+  int N = atoi(argv[1]);                // Number of particles to simulate (atoi = ascii to int)
+  char* input_file_name = argv[2];      // Filename of file to read the initial configuration from
+  int nsteps = atoi(argv[3]);           // Number of time steps
+  float delta_t = atof(argv[4]);        // Timestep
+  int graphics = atoi(argv[5]);         // 1 or 0 meaning graphics on/off
 
 	//COPIED CODE TO READ FILE
-  const char* input_file_name = "circles_N_2.gal";
+  //const char* input_file_name = "circles_N_2.gal";
 
   printf("input_file_name = %s\n", input_file_name);
 
@@ -77,11 +88,11 @@ int main (int argc, char *argv[]) {
 	p2->xPos = 0.2;
 	p2->yPos = 0.2;
 	p2->xVel = -0.2;
-	p2->yVel = 0.5;
+	p2->yVel = 0.5; 
 
 
 	InitializeGraphics(argv[0],windowWidth,windowWidth);
-  	SetCAxes(0,1);
+  SetCAxes(0,1);
 	//Hålla koll på partiklarna genom att ha deras pointers i en lista?
 
 
