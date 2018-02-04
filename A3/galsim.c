@@ -8,11 +8,11 @@
 const float particleRadius = 0.02, particleColor = 0;
 const int windowWidth = 800;
 
-void keep_within_box(double* x, double* y) {
-  if(*x > 1 || *x < 0)
-    *x = 0;
-  if(*y > 1 || *y < 0)
-    *y = 0; 
+void keep_within_box(particle_t * p1) {
+  if(p1->xPos > 1 - particleRadius || p1->xPos < 0 + particleRadius)
+    p1->xVel = -p1->xVel;
+  if(p1->yPos > 1 - particleRadius || p1->yPos < 0 + particleRadius)
+    p1->yVel = -p1->yVel;
 }
 
 int main (int argc, char *argv[]) {
@@ -116,8 +116,9 @@ int main (int argc, char *argv[]) {
         if( i != j ) {
           p2 = &particles[j];
           x = get_pos_1D(p1,p2,'x', delta_t, N); 
+          printf("%f\n", x);
           y = get_pos_1D(p1,p2,'y', delta_t, N);
-          keep_within_box(&x, &y);
+          keep_within_box(p1);
         }
       }
     }
@@ -130,7 +131,7 @@ int main (int argc, char *argv[]) {
       }
       Refresh();
       /* Sleep a short while to avoid screen flickering. */ 
-      usleep(50000);
+      usleep(60000);
     }
   }  	
 
