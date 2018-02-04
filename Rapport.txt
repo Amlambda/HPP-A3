@@ -4,3 +4,9 @@ Rapport A3
 Skrivit funktioner för hastighet, kraft, och positionsberäkningar.
 
 Har inte löst att läsa in partiklarna eller göra en lista som innehåller flera.
+
+Lotta edit 4 feb: Har implementerat inläsning av partiklarna samt att de kan vara hur många som helst.
+
+Skickar med delta_t och N som inparameter för några partikel-funktioner då de använder sig av dessa. (Exvis vid positionsberäkning(delta_t) och kraftberäkning (gravkonstant G ska delas med N)
+
+Något är fel med gränsvillkoren och hastigheten.

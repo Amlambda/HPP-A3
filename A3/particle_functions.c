@@ -86,7 +86,7 @@ double get_force_1D(particle_t * target, particle_t * other, char coord, int N){
 		
 	}
 
-	forceSum = -gravConst*m1*forceSum;
+	forceSum = -gravConst/N*m1*forceSum;
 	return forceSum;
 }
 

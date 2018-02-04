@@ -9,16 +9,11 @@ const float particleRadius = 0.02, particleColor = 0;
 const int windowWidth = 800;
 
 void keep_within_box(double* x, double* y) {
-  if(*x > 1)
+  if(*x > 1 || *x < 0)
     *x = 0;
-  if(*y > 1)
+  if(*y > 1 || *y < 0)
     *y = 0; 
 }
-
-// void push_new_particle( float xPos, float yPos, float xVel, float yVel){
-
-// }
-
 
 int main (int argc, char *argv[]) {
 	float L=1, W=1;    // Dimensions of domain in which particles move

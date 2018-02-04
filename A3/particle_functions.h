@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct particle {		// Changed attribute type to double
+struct particle {		
 	double xPos;
 	double yPos;
 	double mass;
