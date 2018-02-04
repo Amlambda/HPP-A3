@@ -3,15 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
-const float particleRadius = 0.025, particleColor = 0;
+const float particleRadius = 0.02, particleColor = 0;
 const int windowWidth = 800;
 
-void keep_within_box(float* xA, float* yA) {
-  if(*xA > 1)
-    *xA = 0;
-  if(*yA > 1)
-    *yA = 0;
+void keep_within_box(double* x, double* y) {
+  if(*x > 1)
+    *x = 0;
+  if(*y > 1)
+    *y = 0; 
 }
 
 // void push_new_particle( float xPos, float yPos, float xVel, float yVel){
@@ -29,17 +30,20 @@ int main (int argc, char *argv[]) {
   }
   
   // Read input arguments
-  int N = atoi(argv[1]);                // Number of particles to simulate (atoi = ascii to int)
-  char* input_file_name = argv[2];      // Filename of file to read the initial configuration from
-  int nsteps = atoi(argv[3]);           // Number of time steps
-  float delta_t = atof(argv[4]);        // Timestep
-  int graphics = atoi(argv[5]);         // 1 or 0 meaning graphics on/off
+  printf("-------- Input Arguments -----------\n");
+  const int N = atoi(argv[1]);                // Number of particles to simulate (atoi = ascii to int)
+  printf("N: \t\t\t%d\n", N);
+  const char* input_file_name = argv[2];      // Filename of file to read the initial configuration from
+  printf("input_file_name: \t%s\n", input_file_name);
+  const int nsteps = atoi(argv[3]);           // Number of time steps
+  printf("nsteps: \t\t%d\n", nsteps);
+  const float delta_t = atof(argv[4]);        // Timestep
+  printf("delta_t: \t\t%.3f\n", delta_t);
+  const int graphics = atoi(argv[5]);         // 1 or 0 meaning graphics on/off
+  printf("graphics: \t\t%d\n", graphics);
+    printf("------------------------------------\n\n");
 
 	//COPIED CODE TO READ FILE
-  //const char* input_file_name = "circles_N_2.gal";
-
-  printf("input_file_name = %s\n", input_file_name);
-
   /* Open input file and determine its size. */
   FILE* input_file = fopen(input_file_name, "rb");
   if(!input_file) {
@@ -66,63 +70,79 @@ int main (int argc, char *argv[]) {
     printf("Error closing input file.\n");
     return -1;
   }
-  // size_t i;
-  // for(i = 0; i < fileSize; i++) {
-  //   printf("%c ",buffer[i]);
-  // }
+  // END OF COPIED CODE
 
+  /* Read initial configuration from buffer */
+  struct particle particles[N];                 // Array of particle structs staicly allocated on stack
+  char* ptr = &buffer[0];                       // Pointer to use when extracting doubles from buffer
+  int offset = sizeof(double);
+  int index = 0;
+  for (int i = 0; i < fileSize; i+=6*offset) {      // Increase by six*sizeof(double) (six attributes per particle)
+    ptr = &buffer[i];
+    memcpy(&particles[index].xPos, ptr, sizeof(double));
 
+    ptr = &buffer[i+offset];
+    memcpy(&particles[index].yPos, ptr, sizeof(double));
 
-  //Manuellt skapade testpartiklar
-	float xA, yA ,xB ,yB;
+    ptr = &buffer[i+2*offset];
+    memcpy(&particles[index].mass, ptr, sizeof(double));
 
-	//Läs in alla partiklar från fil som struct particles..  
-	particle_t * p1 = malloc(sizeof(particle_t)); 
-	particle_t * p2 = malloc(sizeof(particle_t));
-	p1->mass = 300;
-	p1->xPos = 0.5;
-	p1->yPos = 0.5;
-	p1->xVel = 0.5;
-	p1->yVel = -0.4;
-	p2->mass = 300;
-	p2->xPos = 0.2;
-	p2->yPos = 0.2;
-	p2->xVel = -0.2;
-	p2->yVel = 0.5; 
+    ptr = &buffer[i+3*offset];
+    memcpy(&particles[index].xVel, ptr, sizeof(double));
 
+    ptr = &buffer[i+4*offset];
+    memcpy(&particles[index].yVel, ptr, sizeof(double));
 
-	InitializeGraphics(argv[0],windowWidth,windowWidth);
-  SetCAxes(0,1);
-	//Hålla koll på partiklarna genom att ha deras pointers i en lista?
+    ptr = &buffer[i+5*offset];
+    memcpy(&particles[index].bright, ptr, sizeof(double));
 
+    index++;
+   }
 
-	// Att göra för varje partikel varje tidssteg
-	// 	Var är den? x, y
+  /* If graphics are to be used, prepare graphics window */
+  if (graphics == 1) {
+    InitializeGraphics(argv[0],windowWidth,windowWidth);
+    SetCAxes(0,1);
+  }
 
+  /* Initialize variables */
+  particle_t * p1, * p2;
+  int i, j; 
+  double x, y;
 
-  printf("Hit q to quit.\n");
-  while(!CheckForQuit()) {
-    /* Move A. */
-    xA = get_pos_1D(p1,p2,'x');
-    yA = get_pos_1D(p1,p2,'y');
-    keep_within_box(&xA, &yA);
+  /* Start simulation */
 
-    xB = get_pos_1D(p2,p1,'x');
-    yB = get_pos_1D(p2,p1,'y');
-    keep_within_box(&xB, &yB);
+  for (double time_step = 0; time_step < nsteps; time_step++) {   // Loop over all timesteps
+    
+    /* Update position of particle i with respect to all other particles */
+    for (i = 0; i < N; i++) {
+      p1 = &particles[i];
+      for (j = 0; j < N; j++) {
+        if( i != j ) {
+          p2 = &particles[j];
+          x = get_pos_1D(p1,p2,'x', delta_t, N); 
+          y = get_pos_1D(p1,p2,'y', delta_t, N);
+          keep_within_box(&x, &y);
+        }
+      }
+    }
 
-    /* Call graphics routines. */
-    ClearScreen();
-    DrawCircle(xA, yA, L, W, particleRadius, particleColor);
-    DrawCircle(xB, yB, L, W, particleRadius, particleColor);
-    Refresh();
-    /* Sleep a short while to avoid screen flickering. */
-    usleep(3000);
+    if (graphics == 1) {
+      /* Call graphics routines. */
+      ClearScreen();
+      for (i = 0; i < N; i++) {
+        DrawCircle(particles[i].xPos, particles[i].yPos, L, W, particleRadius, particleColor);
+      }
+      Refresh();
+      /* Sleep a short while to avoid screen flickering. */ 
+      usleep(50000);
+    }
   }  	
-	FlushDisplay();
-  	CloseDisplay();
 
-	free(p1);
-	free(p2);
+  if (graphics == 1) {
+  	FlushDisplay();
+    CloseDisplay();
+  }
+
 	return 0;
 }

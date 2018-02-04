@@ -3,17 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct particle {
-  float mass;	
-  float xPos;
-  float yPos;
-  float xVel;
-  float yVel;
+struct particle {		// Changed attribute type to double
+	double xPos;
+	double yPos;
+	double mass;
+	double xVel;
+	double yVel;
+	double bright;
 };
 typedef struct particle particle_t;
 
-float get_pos_1D(particle_t * target, particle_t * other, char coord);
-float get_vel_1D(float force, float mass, float currVel);
-float get_part_dist_1D(float target1DPos, float other1DPos, float absDist);
-float get_abs_dist(float targetXPos, float targetYPos, float otherXPos, float otherYPos);
-float get_force_1D(particle_t * target, particle_t * other, char coord);
+double get_pos_1D(particle_t * target, particle_t * other, char coord, double delta_t, int N);
+double get_vel_1D(double force, double mass, double currVel, double delta_t);
+double get_part_dist_1D(double target1DPos, double other1DPos, double absDist);
+double get_abs_dist(double targetXPos, double targetYPos, double otherXPos, double otherYPos);
+double get_force_1D(particle_t * target, particle_t * other, char coord, int N); 
