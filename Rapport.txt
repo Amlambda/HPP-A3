@@ -11,6 +11,10 @@ Skickar med delta_t och N som inparameter för några partikel-funktioner då de
 
 Mailade Elias och frågade ang gränsvillkor och varför de börjar studsa när de kommer för nära.
 
+Lotta edit 4 feb 21:09:
+Vi ska inte ha några gränsvillkor! Enligt elias. Och simulerar man nu med rätt värden funkar det fint :)
+
+Allt funkar utom att spara resultat i buffer och skriva denna till en binär fil..
 
 
 Method
@@ -22,6 +26,9 @@ Optimiztion
 
 The code was investigated to look for opportunities of optimisation.
 
+No global variables where used. These where passed as input arguments in the particle functions (eg. delta_t and N).
+
+The buffer used for reading the input data was re-used when the results from the simulation were to be written to an output file.
 
 
 Modified force computation function so that i works for any number of particles

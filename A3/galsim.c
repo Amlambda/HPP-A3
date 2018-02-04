@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
   size_t fileSize = ftell(input_file);
   /* Now use fseek() again to set file position back to beginning of the file. */
   fseek(input_file, 0L, SEEK_SET);
-  printf("fileSize = %lu bytes.\n", fileSize);
+  printf("fileSize = %lu bytes.\n\n", fileSize);
   /* Allocate buffer into which we can then read the data from input_file. */
   char* buffer = (char*)malloc(fileSize*sizeof(char));
   /* Read contents of input_file into buffer. */
@@ -81,19 +81,21 @@ int main (int argc, char *argv[]) {
   // END OF COPIED CODE
 
   /* Read initial configuration from buffer */
-  struct particle particles[N];                 // Array of particle structs staicly allocated on stack
+  struct particle particles[N];                 // Array of particle structs statically allocated on stack
   char* ptr = &buffer[0];                       // Pointer to use when extracting doubles from buffer
   int offset = sizeof(double);
   int index = 0;
   for (int i = 0; i < fileSize; i+=6*offset) {      // Increase by six*sizeof(double) (six attributes per particle)
     ptr = &buffer[i];
     memcpy(&particles[index].xPos, ptr, sizeof(double));
+    printf("%f\n", particles[index].xPos);
 
     ptr = &buffer[i+offset];
     memcpy(&particles[index].yPos, ptr, sizeof(double));
 
     ptr = &buffer[i+2*offset];
     memcpy(&particles[index].mass, ptr, sizeof(double));
+    printf("%f\n", particles[index].mass);
 
     ptr = &buffer[i+3*offset];
     memcpy(&particles[index].xVel, ptr, sizeof(double));
@@ -106,7 +108,6 @@ int main (int argc, char *argv[]) {
 
     index++;
    }
-   free(buffer);
 
   /* If graphics are to be used, prepare graphics window */
   if (graphics == 1) {
@@ -135,8 +136,8 @@ int main (int argc, char *argv[]) {
         DrawCircle(particles[i].xPos, particles[i].yPos, L, W, particleRadius, particleColor);
       }
       Refresh();
-      /* Sleep a short while to avoid screen flickering. (SHOULD ONLY USED FOR SMALL N)*/ 
-      // usleep(1000);
+      /* Sleep a short while to avoid screen flickering. (SHOULD ONLY BE USED FOR SMALL N)*/ 
+      if (N < 10) usleep(5000);
     }
   }  	
 
@@ -145,5 +146,56 @@ int main (int argc, char *argv[]) {
     CloseDisplay();
   }
 
+  /* Overwrite buffer with simulation results */
+  index = 0;
+  for (int i = 0; i < fileSize; i+=6*offset) {      // Increase by six*sizeof(double) (six attributes per particle)
+    ptr = &buffer[i];
+    memcpy(ptr, &particles[index].xPos, sizeof(double));
+
+    ptr = &buffer[i+offset];
+    memcpy(ptr, &particles[index].yPos, sizeof(double));
+
+    ptr = &buffer[i+2*offset];
+    memcpy(ptr, &particles[index].mass, sizeof(double));
+
+    ptr = &buffer[i+3*offset];
+    memcpy(ptr, &particles[index].xVel, sizeof(double));
+
+    ptr = &buffer[i+4*offset];
+    memcpy(ptr, &particles[index].yVel, sizeof(double));
+
+    ptr = &buffer[i+5*offset];
+    memcpy(ptr, &particles[index].bright, sizeof(double)); 
+
+    index++;
+   }
+
+  /* Create output file write results to it */
+  int no_chars_to_copy = strlen(input_file_name) - 4;   // Copy input file name except for ".gal"
+  char* copy_file_name = (char *)malloc(sizeof(char)*no_chars_to_copy);      
+  strncpy(copy_file_name, input_file_name, no_chars_to_copy);
+
+  char* output_file_name;  // Build output file name based on input file name and number of steps 
+  asprintf(&output_file_name, "%s_after%dsteps_result.gal", copy_file_name, nsteps);
+
+  // Open output file for writing
+  FILE* output_file = fopen(output_file_name, "wb");
+  if(!output_file) {
+    printf("Error: failed to open output file '%s' for writing.\n", output_file_name);
+    return -1;
+  }
+  
+  /* Write contents of buffer into output_file. */
+  fwrite(&buffer, sizeof(char), fileSize, output_file);
+
+  if(fclose(output_file) != 0) {
+    printf("Error closing output file.\n");
+    return -1;
+  }
+
+  printf("Result saved in file '%s'\n", output_file_name);
+
+  free(buffer);
+  free(copy_file_name);
 	return 0;
 }
