@@ -2,15 +2,13 @@
 #include <math.h>
 
 const float gravConst = 100;
-const float eps0 = 0.001;
-//const float deltaT = 0.00001;
-const float distMinimum = 0.5;
-
-
+const float eps0 = 0.001;		
+const float distMinimum = 0.01;	// Minimum distance before Plummer sphere modification sets in
+								// Is set to the diameter of a particle
 
 //MASTER BOSS CALCULATE NEW POSITION FUNCTION 
-double get_pos_1D(particle_t * target, particle_t * other, char coord, double delta_t, int N){
-	double force = get_force_1D(target, other, coord, N);
+double get_pos_1D(particle_t * target, int indexTarget, particle_t * others, char coord, double delta_t, int N){
+	double force = get_force_1D(target, indexTarget, others, coord, N);
 	double velocity, position;
 
 	if(coord == 'x'){
@@ -53,37 +51,36 @@ double get_abs_dist(double targetXPos, double targetYPos, double otherXPos, doub
 	return absDist;
 }
 
-/*Calculates force of other particles (for now only one.. we have to send in a pointer 
-list of all the others or something) on target particle in x OR y */
-double get_force_1D(particle_t * target, particle_t * other, char coord, int N){
+// Calculates force on terget particle from other particles 
+double get_force_1D(particle_t * target, int indexTarget, particle_t * other, char coord, int N){
 	double forceSum = 0;
 	double partDist, absDist, m2;
-	int numPart = 2; //Replace with the number of particles
 	int i;
 	particle_t * currOther;
 	double m1 = target->mass;
 
-	for(i=1; i<=(numPart-1); i++){
-		currOther = other;
-		m2 = currOther->mass;
-		absDist = get_abs_dist(target->xPos, target->yPos, currOther->xPos, currOther->yPos);
+	for(i=0; i < N; i++){				// Loop over all particles
+		if( i != indexTarget ) {
+			currOther = other;			// Get the other particle
+			m2 = currOther->mass;
+			absDist = get_abs_dist(target->xPos, target->yPos, currOther->xPos, currOther->yPos);
 
-		if(coord == 'x'){
-			partDist = get_part_dist_1D(target->xPos, currOther->xPos, absDist);
-		}else if(coord == 'y'){
-			partDist = get_part_dist_1D(target->yPos, currOther->yPos, absDist);
-		}else{
-			printf("Please enter x or y as coordinate\n");
-		}
+			if(coord == 'x'){
+				partDist = get_part_dist_1D(target->xPos, currOther->xPos, absDist);
+			}else if(coord == 'y'){
+				partDist = get_part_dist_1D(target->yPos, currOther->yPos, absDist);
+			}else{
+				printf("Please enter x or y as coordinate\n");
+			}
 
-		//Plummer sphere modification, r<<1
-		if((partDist*absDist) < distMinimum){
-			forceSum += (m2*partDist*absDist)/(pow((absDist + eps0),3));
-		}else{
-			forceSum += (m2*partDist)/(pow(absDist,2));
+			// Plummer sphere modification, r<<1 
+			if((partDist*absDist) < distMinimum){
+				forceSum += (m2*partDist*absDist)/(pow((absDist + eps0),3)); 
+			}else{
+				forceSum += (m2*partDist)/(pow(absDist,2));		
+			}
 		}
-		
-		
+		other++;		// Increase pointer to array of particles so that it points at next element
 	}
 
 	forceSum = -gravConst/N*m1*forceSum;

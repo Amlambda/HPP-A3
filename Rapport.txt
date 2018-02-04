@@ -9,4 +9,21 @@ Lotta edit 4 feb: Har implementerat inläsning av partiklarna samt att de kan va
 
 Skickar med delta_t och N som inparameter för några partikel-funktioner då de använder sig av dessa. (Exvis vid positionsberäkning(delta_t) och kraftberäkning (gravkonstant G ska delas med N)
 
-Något är fel med gränsvillkoren och hastigheten.
+Mailade Elias och frågade ang gränsvillkor och varför de börjar studsa när de kommer för nära.
+
+
+
+Method
+
+The test cases with a small number of particles and a small number of planets orbiting a sun were used to verify that the force computation and time stepping worked properly.
+
+
+Optimiztion
+
+The code was investigated to look for opportunities of optimisation.
+
+
+
+Modified force computation function so that i works for any number of particles
+
+Next: make getPos to setPos? (x and y not used)

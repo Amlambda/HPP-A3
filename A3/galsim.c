@@ -5,21 +5,34 @@
 #include <math.h>
 #include <string.h>
 
-const float particleRadius = 0.02, particleColor = 0;
+const float particleRadius = 0.005, particleColor = 0;
 const int windowWidth = 800;
 
-void keep_within_box(particle_t * p1) {
+/* Particles bouncing against border */
+/*void keep_within_box(particle_t * p1) { 
   if(p1->xPos > 1 - particleRadius || p1->xPos < 0 + particleRadius)
     p1->xVel = -p1->xVel;
   if(p1->yPos > 1 - particleRadius || p1->yPos < 0 + particleRadius)
     p1->yVel = -p1->yVel;
-}
+} */
+
+/* Periodical border conditions */
+/*void keep_within_box(particle_t * p1) {   
+  if (p1->xPos > 1 - particleRadius)
+    p1->xPos = 0 + particleRadius;
+  if (p1->xPos < 0 + particleRadius)
+    p1->xPos = 1 - particleRadius;
+  if (p1->yPos > 1 - particleRadius)
+    p1->yPos = 0 + particleRadius;
+  if (p1->yPos < 0 + particleRadius)
+    p1->yPos = 1 - particleRadius;
+} */
 
 int main (int argc, char *argv[]) {
 	float L=1, W=1;    // Dimensions of domain in which particles move
 
   // Check command line arguments
-  if(argc != 6) {   // If not 5 input arguments (argv[0] is the program name)
+  if(argc != 6) {   // End program if not 5 input arguments (argv[0] is the program name)
         printf("Error: Expected number of input arguments is 5\n");
         exit(1);
   }
@@ -33,7 +46,7 @@ int main (int argc, char *argv[]) {
   const int nsteps = atoi(argv[3]);           // Number of time steps
   printf("nsteps: \t\t%d\n", nsteps);
   const float delta_t = atof(argv[4]);        // Timestep
-  printf("delta_t: \t\t%.3f\n", delta_t);
+  printf("delta_t: \t\t%.5f\n", delta_t);
   const int graphics = atoi(argv[5]);         // 1 or 0 meaning graphics on/off
   printf("graphics: \t\t%d\n", graphics);
     printf("------------------------------------\n\n");
@@ -93,6 +106,7 @@ int main (int argc, char *argv[]) {
 
     index++;
    }
+   free(buffer);
 
   /* If graphics are to be used, prepare graphics window */
   if (graphics == 1) {
@@ -101,37 +115,28 @@ int main (int argc, char *argv[]) {
   }
 
   /* Initialize variables */
-  particle_t * p1, * p2;
-  int i, j; 
+  particle_t * target, * other; 
   double x, y;
 
   /* Start simulation */
-
   for (double time_step = 0; time_step < nsteps; time_step++) {   // Loop over all timesteps
-    
+
     /* Update position of particle i with respect to all other particles */
-    for (i = 0; i < N; i++) {
-      p1 = &particles[i];
-      for (j = 0; j < N; j++) {
-        if( i != j ) {
-          p2 = &particles[j];
-          x = get_pos_1D(p1,p2,'x', delta_t, N); 
-          printf("%f\n", x);
-          y = get_pos_1D(p1,p2,'y', delta_t, N);
-          keep_within_box(p1);
-        }
-      }
+    for (int i = 0; i < N; i++) {
+      target = &particles[i];
+      x = get_pos_1D(target,i,particles,'x', delta_t, N); 
+      y = get_pos_1D(target,i,particles,'y', delta_t, N);
     }
 
     if (graphics == 1) {
       /* Call graphics routines. */
       ClearScreen();
-      for (i = 0; i < N; i++) {
+      for (int i = 0; i < N; i++) {
         DrawCircle(particles[i].xPos, particles[i].yPos, L, W, particleRadius, particleColor);
       }
       Refresh();
-      /* Sleep a short while to avoid screen flickering. */ 
-      usleep(60000);
+      /* Sleep a short while to avoid screen flickering. (SHOULD ONLY USED FOR SMALL N)*/ 
+      // usleep(1000);
     }
   }  	
 
