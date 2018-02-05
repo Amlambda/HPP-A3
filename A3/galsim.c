@@ -95,7 +95,7 @@ int main (int argc, char *argv[]) {
 
     ptr = &buffer[i+2*offset];
     memcpy(&particles[index].mass, ptr, sizeof(double));
-    printf("%f\n", particles[index].mass);
+    //printf("%f\n", particles[index].mass);
 
     ptr = &buffer[i+3*offset];
     memcpy(&particles[index].xVel, ptr, sizeof(double));
@@ -154,7 +154,7 @@ int main (int argc, char *argv[]) {
 
     ptr = &buffer[i+offset];
     memcpy(ptr, &particles[index].yPos, sizeof(double));
-
+    
     ptr = &buffer[i+2*offset];
     memcpy(ptr, &particles[index].mass, sizeof(double));
 
@@ -163,17 +163,24 @@ int main (int argc, char *argv[]) {
 
     ptr = &buffer[i+4*offset];
     memcpy(ptr, &particles[index].yVel, sizeof(double));
-
+    
     ptr = &buffer[i+5*offset];
     memcpy(ptr, &particles[index].bright, sizeof(double)); 
 
+    /*sprintf(ptr, "%f", particles[index].xPos);
+    sprintf(ptr, "%f", particles[index].yPos);
+    sprintf(ptr, "%f", particles[index].mass);
+    sprintf(ptr, "%f", particles[index].xVel);
+    sprintf(ptr, "%f", particles[index].yVel);
+    sprintf(ptr, "%f", particles[index].bright); */
+
     index++;
-   }
+  }
 
   /* Create output file write results to it */
-  int no_chars_to_copy = strlen(input_file_name) - 4;   // Copy input file name except for ".gal"
-  char* copy_file_name = (char *)malloc(sizeof(char)*no_chars_to_copy);      
-  strncpy(copy_file_name, input_file_name, no_chars_to_copy);
+  int no_of_chars_to_copy = strlen(input_file_name) - 4;   // Copy input file name except for ".gal"
+  char* copy_file_name = (char *)malloc(sizeof(char)*no_of_chars_to_copy);      
+  strncpy(copy_file_name, input_file_name, no_of_chars_to_copy);
 
   char* output_file_name;  // Build output file name based on input file name and number of steps 
   asprintf(&output_file_name, "%s_after%dsteps_result.gal", copy_file_name, nsteps);
@@ -186,7 +193,11 @@ int main (int argc, char *argv[]) {
   }
   
   /* Write contents of buffer into output_file. */
-  fwrite(&buffer, sizeof(char), fileSize, output_file);
+  noOfItemsRead = fwrite(buffer, sizeof(char), fileSize, output_file);
+  if(noOfItemsRead != fileSize) {
+    printf("Error: failed to write buffer contents into result file.\n");
+    return -1;
+  }
 
   if(fclose(output_file) != 0) {
     printf("Error closing output file.\n");

@@ -1,20 +1,23 @@
 Rapport A3
 
-
+Amanda:
 Skrivit funktioner för hastighet, kraft, och positionsberäkningar.
 
 Har inte löst att läsa in partiklarna eller göra en lista som innehåller flera.
 
-Lotta edit 4 feb: Har implementerat inläsning av partiklarna samt att de kan vara hur många som helst.
+Lotta edit 4 feb: Har implementerat inläsning av startvärden för partiklarna samt att de kan vara hur många som helst.
 
 Skickar med delta_t och N som inparameter för några partikel-funktioner då de använder sig av dessa. (Exvis vid positionsberäkning(delta_t) och kraftberäkning (gravkonstant G ska delas med N)
 
-Mailade Elias och frågade ang gränsvillkor och varför de börjar studsa när de kommer för nära.
+Implementerat om kraftfunktionen så den beräknar för alla partiklar.
 
-Lotta edit 4 feb 21:09:
+Implementerat skrivning av resultatfil och testkört dessa dom input. Ha
+
 Vi ska inte ha några gränsvillkor! Enligt elias. Och simulerar man nu med rätt värden funkar det fint :)
 
-Allt funkar utom att spara resultat i buffer och skriva denna till en binär fil..
+Allt funkar och vi kan nu börja utvärdera ur prestandasynpunkt.
+
+Vid jämförelse av resultatfil med referensfil fås ett värde på hur mycket det diffar. Oklart hur stort detta kan vara för att det ska vara godtagbart.
 
 
 Method
