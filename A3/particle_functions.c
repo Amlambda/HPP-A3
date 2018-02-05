@@ -1,9 +1,9 @@
 #include "particle_functions.h"
 #include <math.h>
 
-const float gravConst = 100;
-const float eps0 = 0.001;		
-const float distMinimum = 0.01;	// Minimum distance before Plummer sphere modification sets in
+const double gravConst = 100;
+const double eps0 = 0.001;		
+const double distMinimum = 0.01;	// Minimum distance before Plummer sphere modification sets in
 								// Is set to the diameter of a particle
 
 //MASTER BOSS CALCULATE NEW POSITION FUNCTION 
@@ -25,8 +25,6 @@ double get_pos_1D(particle_t * target, int indexTarget, particle_t * others, cha
 		target->yPos = position;
 		target->yVel = velocity;
 	}
-	// printf("%c velocity is %lg\n", coord, velocity);
-	// printf("%c position is %lg\n", coord, position);
 
 	return position;
 }

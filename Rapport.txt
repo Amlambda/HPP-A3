@@ -27,13 +27,26 @@ The test cases with a small number of particles and a small number of planets or
 
 Optimiztion
 
+From the beginning:
 The code was investigated to look for opportunities of optimisation.
 
 No global variables where used. These where passed as input arguments in the particle functions (eg. delta_t and N).
 
 The buffer used for reading the input data was re-used when the results from the simulation were to be written to an output file.
 
+Memory for the particle structs was allocated staticly and not dynamically.
 
-Modified force computation function so that i works for any number of particles
+Loop unrolling was used instead of inner loop for when handling of particle attributes when reading and writing file. (6 attributes)
 
-Next: make getPos to setPos? (x and y not used)
+
+When optimising for real:
+
+O3 flag added
+
+adding of restrict keywords for input pointers of particle functions
+
+using of constant variables 
+
+-funroll-loops flag added (did not make any difference so it was removed)
+
+Changing to using float instead of double for every floating point variable shorted the runtime a lot but did increase the error and did sometimes not write the result file properly.  Also, the graphics did not work for some reasen when this alternative was used as the window was all black. Therefore, the initial attribute values of the particles could not be controlled. Changed back to double.

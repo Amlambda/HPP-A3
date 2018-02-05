@@ -5,7 +5,7 @@
 #include <math.h>
 #include <string.h>
 
-const float particleRadius = 0.005, particleColor = 0;
+const double particleRadius = 0.005, particleColor = 0;
 const int windowWidth = 800;
 
 /* Particles bouncing against border */
@@ -29,7 +29,7 @@ const int windowWidth = 800;
 } */
 
 int main (int argc, char *argv[]) {
-	float L=1, W=1;    // Dimensions of domain in which particles move
+	double L=1, W=1;    // Dimensions of domain in which particles move
 
   // Check command line arguments
   if(argc != 6) {   // End program if not 5 input arguments (argv[0] is the program name)
@@ -45,7 +45,7 @@ int main (int argc, char *argv[]) {
   printf("input_file_name: \t%s\n", input_file_name);
   const int nsteps = atoi(argv[3]);           // Number of time steps
   printf("nsteps: \t\t%d\n", nsteps);
-  const float delta_t = atof(argv[4]);        // Timestep
+  const double delta_t = atof(argv[4]);        // Timestep
   printf("delta_t: \t\t%.5f\n", delta_t);
   const int graphics = atoi(argv[5]);         // 1 or 0 meaning graphics on/off
   printf("graphics: \t\t%d\n", graphics);
@@ -81,21 +81,19 @@ int main (int argc, char *argv[]) {
   // END OF COPIED CODE
 
   /* Read initial configuration from buffer */
-  struct particle particles[N];                 // Array of particle structs statically allocated on stack
+  struct particle particles[N];                 // Array of particle structs staticly allocated on stack
   char* ptr = &buffer[0];                       // Pointer to use when extracting doubles from buffer
-  int offset = sizeof(double);
+  const int offset = sizeof(double);            // Constant used as offset into buffer when reading and writing doubles
   int index = 0;
   for (int i = 0; i < fileSize; i+=6*offset) {      // Increase by six*sizeof(double) (six attributes per particle)
     ptr = &buffer[i];
     memcpy(&particles[index].xPos, ptr, sizeof(double));
-    printf("%f\n", particles[index].xPos);
 
     ptr = &buffer[i+offset];
     memcpy(&particles[index].yPos, ptr, sizeof(double));
 
     ptr = &buffer[i+2*offset];
     memcpy(&particles[index].mass, ptr, sizeof(double));
-    //printf("%f\n", particles[index].mass);
 
     ptr = &buffer[i+3*offset];
     memcpy(&particles[index].xVel, ptr, sizeof(double));
@@ -117,16 +115,16 @@ int main (int argc, char *argv[]) {
 
   /* Initialize variables */
   particle_t * target, * other; 
-  double x, y;
 
   /* Start simulation */
-  for (double time_step = 0; time_step < nsteps; time_step++) {   // Loop over all timesteps
+  for (int time_step = 0; time_step < nsteps; time_step++) {   // Loop over all timesteps
 
     /* Update position of particle i with respect to all other particles */
     for (int i = 0; i < N; i++) {
       target = &particles[i];
-      x = get_pos_1D(target,i,particles,'x', delta_t, N); 
-      y = get_pos_1D(target,i,particles,'y', delta_t, N);
+      // This get method could be modified to a set since values are not used
+      get_pos_1D(target,i,particles,'x', delta_t, N);     
+      get_pos_1D(target,i,particles,'y', delta_t, N);
     }
 
     if (graphics == 1) {
@@ -137,7 +135,7 @@ int main (int argc, char *argv[]) {
       }
       Refresh();
       /* Sleep a short while to avoid screen flickering. (SHOULD ONLY BE USED FOR SMALL N)*/ 
-      if (N < 10) usleep(5000);
+      //usleep(5000);
     }
   }  	
 
@@ -166,13 +164,6 @@ int main (int argc, char *argv[]) {
     
     ptr = &buffer[i+5*offset];
     memcpy(ptr, &particles[index].bright, sizeof(double)); 
-
-    /*sprintf(ptr, "%f", particles[index].xPos);
-    sprintf(ptr, "%f", particles[index].yPos);
-    sprintf(ptr, "%f", particles[index].mass);
-    sprintf(ptr, "%f", particles[index].xVel);
-    sprintf(ptr, "%f", particles[index].yVel);
-    sprintf(ptr, "%f", particles[index].bright); */
 
     index++;
   }
