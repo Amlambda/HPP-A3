@@ -1,0 +1,2 @@
+49.174s 
+Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz

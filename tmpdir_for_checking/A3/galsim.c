@@ -174,8 +174,7 @@ int main (int argc, char *argv[]) {
   strncpy(copy_file_name, input_file_name, no_of_chars_to_copy);
 
   char* output_file_name;  // Build output file name based on input file name and number of steps 
-  //asprintf(&output_file_name, "%s_after%dsteps_result.gal", copy_file_name, nsteps);
-  output_file_name = "result.gal";
+  asprintf(&output_file_name, "%s_after%dsteps_result.gal", copy_file_name, nsteps);
 
   // Open output file for writing
   FILE* output_file = fopen(output_file_name, "wb");
