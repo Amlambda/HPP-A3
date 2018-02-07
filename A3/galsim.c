@@ -8,25 +8,6 @@
 const double particleRadius = 0.005, particleColor = 0;
 const int windowWidth = 800;
 
-/* Particles bouncing against border */
-/*void keep_within_box(particle_t * p1) { 
-  if(p1->xPos > 1 - particleRadius || p1->xPos < 0 + particleRadius)
-    p1->xVel = -p1->xVel;
-  if(p1->yPos > 1 - particleRadius || p1->yPos < 0 + particleRadius)
-    p1->yVel = -p1->yVel;
-} */
-
-/* Periodical border conditions */
-/*void keep_within_box(particle_t * p1) {   
-  if (p1->xPos > 1 - particleRadius)
-    p1->xPos = 0 + particleRadius;
-  if (p1->xPos < 0 + particleRadius)
-    p1->xPos = 1 - particleRadius;
-  if (p1->yPos > 1 - particleRadius)
-    p1->yPos = 0 + particleRadius;
-  if (p1->yPos < 0 + particleRadius)
-    p1->yPos = 1 - particleRadius;
-} */
 
 int main (int argc, char *argv[]) {
 	double L=1, W=1;    // Dimensions of domain in which particles move
