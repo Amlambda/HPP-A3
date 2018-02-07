@@ -1,2 +1,2 @@
-31.736s
-Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz
+18.734s
+Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz

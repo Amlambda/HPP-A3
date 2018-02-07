@@ -7,7 +7,7 @@ const double distMinimum = 0.01;	// Minimum distance before Plummer sphere modif
 								// Is set to the diameter of a particle
 
 //MASTER BOSS CALCULATE NEW POSITION FUNCTION 
-double get_pos_1D(particle_t * target, int indexTarget, particle_t * others, char coord, double delta_t, int N){
+double get_pos_1D(particle_t * target, int indexTarget, particle_t * __restrict others, char coord, double delta_t, int N){
 	double force = get_force_1D(target, indexTarget, others, coord, N);
 	double velocity, position;
 
@@ -50,7 +50,7 @@ double get_abs_dist(double targetXPos, double targetYPos, double otherXPos, doub
 }
 
 // Calculates force on terget particle from other particles 
-double get_force_1D(particle_t * target, int indexTarget, particle_t * other, char coord, int N){
+double get_force_1D(particle_t * target, int indexTarget, particle_t * __restrict others, char coord, int N){
 	double forceSum = 0;
 	double partDist, absDist, m2;
 	int i;
@@ -59,7 +59,7 @@ double get_force_1D(particle_t * target, int indexTarget, particle_t * other, ch
 
 	for(i=0; i < N; i++){				// Loop over all particles
 		if( i != indexTarget ) {
-			currOther = other;			// Get the other particle
+			currOther = others;			// Get the other particle
 			m2 = currOther->mass;
 			absDist = get_abs_dist(target->xPos, target->yPos, currOther->xPos, currOther->yPos);
 
@@ -78,7 +78,7 @@ double get_force_1D(particle_t * target, int indexTarget, particle_t * other, ch
 				forceSum += (m2*partDist)/(pow(absDist,2));		
 			}
 		}
-		other++;		// Increase pointer to array of particles so that it points at next element
+		others++;		// Increase pointer to array of particles so that it points at next element
 	}
 
 	forceSum = -gravConst/N*m1*forceSum;
