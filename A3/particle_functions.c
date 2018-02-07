@@ -3,8 +3,8 @@
 
 const double gravConst = 100;
 const double eps0 = 0.001;		
-const double distMinimum = 0.01;	// Minimum distance before Plummer sphere modification sets in
-								// Is set to the diameter of a particle
+const double distMinimum = 0.02;	// Minimum distance before Plummer sphere modification sets in
+								// Is set to twice the diameter of a particle
 
 //MASTER BOSS CALCULATE NEW POSITION FUNCTION 
 double get_pos_1D(particle_t * target, int indexTarget, particle_t * __restrict others, char coord, double delta_t, int N){
@@ -72,7 +72,7 @@ double get_force_1D(particle_t * target, int indexTarget, particle_t * __restric
 			}
 
 			// Plummer sphere modification, r<<1 
-			if((partDist*absDist) < distMinimum){
+			if(absDist < distMinimum){
 				forceSum += (m2*partDist*absDist)/(pow((absDist + eps0),3)); 
 			}else{
 				forceSum += (m2*partDist)/(pow(absDist,2));		
@@ -81,7 +81,7 @@ double get_force_1D(particle_t * target, int indexTarget, particle_t * __restric
 		others++;		// Increase pointer to array of particles so that it points at next element
 	}
 
-	forceSum = -gravConst/N*m1*forceSum;
+	forceSum = -(gravConst/N)*m1*forceSum;
 	return forceSum;
 }
 

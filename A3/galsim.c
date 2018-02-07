@@ -116,7 +116,9 @@ int main (int argc, char *argv[]) {
       }
       Refresh();
       /* Sleep a short while to avoid screen flickering. (SHOULD ONLY BE USED FOR SMALL N)*/ 
-      //usleep(5000);
+      if(N<500){
+        usleep(5000);
+      }
     }
   }  	
 
